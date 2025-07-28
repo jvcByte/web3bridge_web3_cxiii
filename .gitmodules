@@ -1,0 +1,15 @@
+[submodule "Websbridge-Web3-Cohort-XIII"]
+	path = Websbridge-Web3-Cohort-XIII
+	url = https://github.com/jvcByte/Web3bridge-Web3-Cohort-XIII
+[submodule "celo-alfajores"]
+	path = celo-alfajores
+	url = https://github.com/jvcByte/celo-alfajores
+[submodule "Web3bridge-Web3-Cohort-XIII"]
+	path = Web3bridge-Web3-Cohort-XIII
+	url = https://github.com/jvcByte/Web3bridge-Web3-Cohort-XIII
+[submodule "celo_alfajores_testnet"]
+	path = celo_alfajores_testnet
+	url = https://github.com/jvcByte/celo-alfajores
+[submodule "storageDapp"]
+	path = storageDapp
+	url = https://github.com/jvcByte/storageDApp
