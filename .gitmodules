@@ -7,3 +7,6 @@
 [submodule "storageDapp"]
 	path = storageDapp
 	url = https://github.com/jvcByte/storageDApp
+[submodule "school_mngt_system"]
+	path = school_mngt_system
+	url = https://github.com/jvcByte/school_management_system
