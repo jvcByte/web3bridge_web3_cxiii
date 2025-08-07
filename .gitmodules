@@ -10,3 +10,12 @@
 [submodule "school_mngt_system"]
 	path = school_mngt_system
 	url = https://github.com/jvcByte/school_management_system
+[submodule "learning_foundry/lib/forge-std"]
+	path = learning_foundry/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "event_ticketing/lib/forge-std"]
+	path = event_ticketing/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "event_ticketing/lib/openzeppelin-contracts"]
+	path = event_ticketing/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
