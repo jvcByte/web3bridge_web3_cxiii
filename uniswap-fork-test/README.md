@@ -256,18 +256,84 @@ contract UniswapV2Interactions is Script {
 
 ## **7. Run Anvil Fork**
 
-In one terminal:
+In one terminal, start a local fork of Ethereum mainnet:
 
 ```bash
+# Source your environment variables
 source .env
+
+# Start Anvil with forking from the latest block
 anvil --fork-url $MAINNET_RPC_URL --fork-block-number 17500000
 ```
+
+This will start a local Ethereum node forked from mainnet at the specified block number.
 
 ---
 
 ## **8. Run the Script**
 
-In another terminal:
+In another terminal, execute the script using Foundry's `forge` command:
+
+```bash
+# Run the script on the local fork
+forge script script/UniswapV2Interactions.s.sol:UniswapV2Interactions \
+    --rpc-url http://localhost:8545 \
+    --broadcast \
+    -vvv
+```
+
+### Expected Output
+
+When you run the script, you should see output similar to the following:
+
+```
+Current fork block: 17500000
+Block timestamp: 1650000000
+
+=== Initial Balances ===
+DAI Balance: 9266206.791218982136922734 DAI
+WETH Balance: 228.976237737393976027 WETH
+
+=== 1. Pool Address ===
+Using existing DAI-WETH pair: 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11
+
+=== 2. Pool Reserves ===
+DAI Reserve: 7303314.684690277716267613 DAI
+WETH Reserve: 1718.400552615584182739 WETH
+
+=== 3. Calculate Swap ===
+Swapping 1000.000000000000000000 DAI for ~0.234552607407029564 WETH
+
+=== 4. Execute Swap ===
+
+=== 5. Swap Complete ===
+Received: 0.234552607407029564 WETH
+
+=== 6. Final Reserves ===
+DAI Reserve: 7304314.684690277716267613 DAI
+WETH Reserve: 1718.166000008177153175 WETH
+
+=== 7. Final Balances ===
+DAI Balance: 9265206.791218982136922734 DAI
+WETH Balance: 229.210790344801005591 WETH
+```
+
+## **9. Understanding the Output**
+
+1. **Initial Setup**: Shows the current block number and timestamp of the fork
+2. **Initial Balances**: Displays the DAI and WETH balances of the whale address
+3. **Pool Address**: Shows whether it's using an existing pair or creating a new one
+4. **Pool Reserves**: Displays the current reserves in the liquidity pool
+5. **Swap Calculation**: Shows the swap details including expected output
+6. **Swap Execution**: Executes the swap with 5% slippage protection
+7. **Final State**: Shows the updated reserves and balances after the swap
+
+## **10. Customization**
+
+You can modify the following variables in the script:
+- `amountIn`: The amount of input tokens to swap
+- `minAmountOut`: The minimum amount of output tokens to accept (slippage protection)
+- `path`: The token swap path (e.g., DAI → WETH or WETH → DAI)
 
 ```bash
 forge script script/UniswapV2Interactions.s.sol:UniswapV2Interactions \

@@ -19,3 +19,9 @@
 [submodule "event_ticketing/lib/openzeppelin-contracts"]
 	path = event_ticketing/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "pigi-vest/lib/forge-std"]
+	path = pigi-vest/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "pigi-vest/lib/openzeppelin-contracts"]
+	path = pigi-vest/lib/openzeppelin-contracts
+	url = https://github.com/openzeppelin/openzeppelin-contracts

@@ -13,7 +13,18 @@ import "../src/interfaces/IWETH.sol";
 
 
 contract UniswapV2Interactions is Script {
-    error APPROVAL_FAILED();
+
+    address constant ROUTER  = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    address constant WETH    = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant DAI     = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+
+    // DAI whale (Binance hot wallet)
+    address constant DAI_WHALE = 0x28C6c06298d514Db089934071355E5743bf21d60;
+    
+    error DAI_APPROVAL_FAILED();
+    error WETH_APPROVAL_FAILED();
+    
     function padLeft(string memory _str, uint256 _length, bytes1 _padChar) internal pure returns (string memory) {
         bytes memory _bytes = bytes(_str);
         if (_bytes.length >= _length) {
@@ -26,14 +37,6 @@ contract UniswapV2Interactions is Script {
         }
         return string(_padded);
     }
-
-    address constant ROUTER  = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
-    address constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
-    address constant WETH    = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    address constant DAI     = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-
-    // Example DAI whale (Binance hot wallet)
-    address constant DAI_WHALE = 0x28C6c06298d514Db089934071355E5743bf21d60;
 
     function formatTokenAmount(uint256 amount, uint8 decimals) public pure returns (string memory) {
         uint256 whole = amount / 10**decimals;
@@ -58,8 +61,8 @@ contract UniswapV2Interactions is Script {
         IUniswapV2Router02 router = IUniswapV2Router02(ROUTER);
         
         console.log("\n=== Initial Balances ===");
-        console.log(string(abi.encodePacked("DAI Balance: ", formatTokenAmount(dai.balanceOf(DAI_WHALE), 18), " DAI")));
-        console.log(string(abi.encodePacked("WETH Balance: ", formatTokenAmount(weth.balanceOf(DAI_WHALE), 18), " WETH")));
+        console.log(string(abi.encodePacked("DAI Balance of DAI_WHALE: ", formatTokenAmount(dai.balanceOf(DAI_WHALE), 18), " DAI")));
+        console.log(string(abi.encodePacked("WETH Balance of DAI_WHALE: ", formatTokenAmount(weth.balanceOf(DAI_WHALE), 18), " WETH")));
         
         vm.startPrank(DAI_WHALE);
         
@@ -71,6 +74,32 @@ contract UniswapV2Interactions is Script {
             IUniswapV2Factory factory = IUniswapV2Factory(FACTORY);
             pair = factory.createPair(WETH, DAI);
             console.log("New pair created:", pair);
+            
+            // Add initial liquidity to the new pair
+            console.log("\n=== Adding Initial Liquidity ===");
+            uint256 amountADesired = 10 * 1e18; 
+            uint256 amountBDesired = 0.01 * 1e18; 
+            
+            // Approve router to spend tokens
+            require(dai.approve(address(router), amountADesired), DAI_APPROVAL_FAILED());
+            require(weth.approve(address(router), amountBDesired), WETH_APPROVAL_FAILED());
+            
+            // Add liquidity
+            (uint amountA, uint amountB, uint liquidity) = router.addLiquidity(
+                DAI,
+                WETH,
+                amountADesired,
+                amountBDesired,
+                (amountADesired * 99) / 100, // 1% slippage
+                (amountBDesired * 99) / 100, // 1% slippage
+                DAI_WHALE,
+                block.timestamp + 300
+            );
+            
+            console.log(string(abi.encodePacked("Added ", formatTokenAmount(amountA, 18), " DAI and ", 
+                formatTokenAmount(amountB, 18), " WETH as initial liquidity")));
+            console.log("Liquidity tokens minted:", liquidity);
+            
         } else {
             console.log("Using existing DAI-WETH pair:", pair);
         }
@@ -94,7 +123,7 @@ contract UniswapV2Interactions is Script {
         console.log("\n=== 4. Execute Swap ===");
         uint256 minAmountOut = (expectedAmountOut * 95) / 100; // 5% slippage
         
-        require(dai.approve(address(router), amountIn), "Approval failed");
+        require(dai.approve(address(router), amountIn), DAI_APPROVAL_FAILED());
         
         uint256[] memory swapResult = router.swapExactTokensForTokens(
             amountIn,
