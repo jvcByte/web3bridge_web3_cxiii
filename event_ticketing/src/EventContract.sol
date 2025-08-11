@@ -106,82 +106,82 @@ contract EventContract {
         return _event_id;
     }
 
-    function purchaseTicketWithToken(
-        uint256 _eventId, 
-        uint256 _amount, 
-        IERC20 _paymentToken
-    ) public {
-        if(_amount <= 0) {
-            revert INVALID_AMOUNT();
-        }
-        // Check if the event exists
-        if( _eventId > eventCount) {
-            revert INVALID_EVENT_ID();
-        }
+    // function purchaseTicketWithToken(
+    //     uint256 _eventId, 
+    //     uint256 _amount, 
+    //     IERC20 _paymentToken
+    // ) public {
+    //     if(_amount <= 0) {
+    //         revert INVALID_AMOUNT();
+    //     }
+    //     // Check if the event exists
+    //     if( _eventId > eventCount) {
+    //         revert INVALID_EVENT_ID();
+    //     }
         
-        Event storage eventData = events[_eventId];
-        uint256 totalCost = eventData.ticketPrice * _amount;
+    //     Event storage eventData = events[_eventId];
+    //     uint256 totalCost = eventData.ticketPrice * _amount;
         
-        // Transfer tokens from user to this contract
-        _paymentToken.transferFrom(msg.sender, address(this), totalCost);
+    //     // Transfer tokens from user to this contract
+    //     _paymentToken.transferFrom(msg.sender, address(this), totalCost);
         
-        balance += totalCost;
+    //     balance += totalCost;
 
         
-        // Mint the NFT tickets
-        mintTicket(_eventId, _amount);
+    //     // Mint the NFT tickets
+    //     mintTicket(_eventId, _amount);
         
-        // Emit an event for the purchase
-        emit TicketPurchased(_eventId, msg.sender, _amount, address(_paymentToken), totalCost);
-    }
+    //     // Emit an event for the purchase
+    //     emit TicketPurchased(_eventId, msg.sender, _amount, address(_paymentToken), totalCost);
+    // }
     
-    // Keep the original mint function for owner/other purposes
-    function mintTicket(uint256 _eventId, uint256 _amount) internal {
+    // // Keep the original mint function for owner/other purposes
+    // function mintTicket(uint256 _eventId, uint256 _amount) internal {
         
-        Ticket ticket = Ticket(events[_eventId].ticketAddress);
-        ticket._mintTicket(msg.sender, _amount);
-    }
+    //     Ticket ticket = Ticket(events[_eventId].ticketAddress);
+    //     ticket._mintTicket(msg.sender, _amount);
+    // }
 
 
-    function withdraw(uint256 _amount) public onlyOwner{
-        if (_amount > balance) {
-            revert INVALID_AMOUNT();
-        }
-        payable(msg.sender).transfer(_amount);
-        balance -= _amount;
-    }
+    // function withdraw(uint256 _amount) public onlyOwner{
+    //     if (_amount > balance) {
+    //         revert INVALID_AMOUNT();
+    //     }
+    //     payable(msg.sender).transfer(_amount);
+    //     balance -= _amount;
+    // }
 
-    function transferERC20(IERC20 _token, address _to, uint256 _amount) public onlyOwner {
-        uint256 erc20Balance = _token.balanceOf(address(this));
+    // function transferERC20(IERC20 _token, address _to, uint256 _amount) public onlyOwner {
+    //     uint256 erc20Balance = _token.balanceOf(address(this));
         
-        if (erc20Balance < _amount) {
-            revert INVALID_AMOUNT();
-        }
-        if (_to == address(0)) {
-            revert ADDRESS_ZERO();
-        }
-        _token.transfer(_to, _amount);
-        balance -= _amount;
-        emit ERC20Transfer(msg.sender, _to, _amount);
-    }
+    //     if (erc20Balance < _amount) {
+    //         revert INVALID_AMOUNT();
+    //     }
+    //     if (_to == address(0)) {
+    //         revert ADDRESS_ZERO();
+    //     }
+    //     _token.transfer(_to, _amount);
+    //     balance -= _amount;
+    //     emit ERC20Transfer(msg.sender, _to, _amount);
+    // }
 
-    receive() external payable {
-        balance += msg.value;
-        emit TransactionReceived(msg.sender, msg.value);
-    }
+    // receive() external payable {
+    //     balance += msg.value;
+    //     emit TransactionReceived(msg.sender, msg.value);
+    // }
 
-    function purchaseTicket(uint256 _eventId) public {
-        Event storage eventDetails = events[_eventId];
-        require(msg.sender != address(0), ADDRESS_ZERO());
-        require(eventDetails.ticketAddress != address(0), EVENT_NOT_FOUND(_eventId));
-        require(eventDetails.status == EventStatus.Upcoming || eventDetails.status == EventStatus.Ongoing, INACTIVE_EVENT(_eventId));
+    // function purchaseTicket(uint256 _eventId) public {
+    //     Event storage eventDetails = events[_eventId];
+    //     require(msg.sender != address(0), ADDRESS_ZERO());
+    //     require(eventDetails.ticketAddress != address(0), EVENT_NOT_FOUND(_eventId));
+    //     require(eventDetails.status == EventStatus.Upcoming || eventDetails.status == EventStatus.Ongoing, INACTIVE_EVENT(_eventId));
 
-        uint256 _balance = IERC20(eventDetails.ticketAddress).balanceOf(msg.sender);
-        require(_balance >= eventDetails.ticketPrice, INSUFFICIENT_BALANCE());
+    //     uint256 _balance = IERC20(eventDetails.ticketAddress).balanceOf(msg.sender);
+    //     require(_balance >= eventDetails.ticketPrice, INSUFFICIENT_BALANCE());
 
-        IERC721(eventDetails.ticketAddress).safeMint(msg.sender);
-        // IERC20(tokenAddress).safeTransferFrom(msg.sender, eventDetails.organizer, eventDetails.ticketPrice);
+    //     IERC721(eventDetails.ticketAddress).safeMint(msg.sender);
+    //     // IERC20(tokenAddress).safeTransferFrom(msg.sender, eventDetails.organizer, eventDetails.ticketPrice);
 
 
-    }
+    // }
 }

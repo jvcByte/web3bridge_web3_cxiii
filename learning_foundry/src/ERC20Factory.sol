@@ -57,7 +57,7 @@ contract ERC20Factory {
         uint256 _totalSupply,
         address _initialOwner
     ) 
-        external 
+        public 
         validTokenParams(_name, _symbol, _totalSupply)
         returns (address tokenAddress) 
     {
